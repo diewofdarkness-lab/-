@@ -9,29 +9,20 @@ const client = new Client({
 });
 
 const TOKEN = process.env.TOKEN;
-const CHANNEL_ID = process.env.CHANNEL_ID;
+const CHANNEL_IDS = process.env.CHANNEL_IDS.split(',');
 
 client.once('ready', () => {
   console.log('บอทออนไลน์แล้ว!');
-  const channel = client.channels.cache.get(CHANNEL_ID);
-  const connection = joinVoiceChannel({
-    channelId: channel.id,
-    guildId: channel.guild.id,
-    adapterCreator: channel.guild.voiceAdapterCreator,
-    selfDeaf: true,
-    selfMute: true,
-  });
-  connection.on(VoiceConnectionStatus.Disconnected, () => {
-    setTimeout(() => {
-      const ch = client.channels.cache.get(CHANNEL_ID);
-      joinVoiceChannel({
-        channelId: ch.id,
-        guildId: ch.guild.id,
-        adapterCreator: ch.guild.voiceAdapterCreator,
-        selfDeaf: true,
-        selfMute: true,
-      });
-    }, 5000);
+  CHANNEL_IDS.forEach(id => {
+    const channel = client.channels.cache.get(id.trim());
+    if (!channel) return;
+    joinVoiceChannel({
+      channelId: channel.id,
+      guildId: channel.guild.id,
+      adapterCreator: channel.guild.voiceAdapterCreator,
+      selfDeaf: true,
+      selfMute: true,
+    });
   });
 });
 
