@@ -11,11 +11,13 @@ const client = new Client({
 const TOKEN = process.env.TOKEN;
 const CHANNEL_IDS = process.env.CHANNEL_IDS.split(',');
 
-client.once('ready', () => {
-  console.log('บอทออนไลน์แล้ว!');
+function joinChannels() {
   CHANNEL_IDS.forEach(id => {
     const channel = client.channels.cache.get(id.trim());
-    if (!channel) return;
+    if (!channel) {
+      console.log('หาห้องไม่เจอ:', id);
+      return;
+    }
     joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
@@ -23,7 +25,13 @@ client.once('ready', () => {
       selfDeaf: true,
       selfMute: true,
     });
+    console.log('เข้าห้อง:', channel.name);
   });
+}
+
+client.once('ready', () => {
+  console.log('บอทออนไลน์แล้ว!');
+  setTimeout(joinChannels, 3000);
 });
 
 client.login(TOKEN);
